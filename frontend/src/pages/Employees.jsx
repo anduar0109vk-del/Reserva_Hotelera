@@ -4,7 +4,7 @@ import * as XLSX from 'xlsx';
 import { jsPDF } from 'jspdf';
 import { apiFetch } from '../api';
 
-const emptyForm = { firstName: '', lastName: '', email: '', position: '', department: '', salary: '', hireDate: '', status: 'Activo' };
+const emptyForm = { firstName: '', lastName: '', email: '', phone: '', documentNumber: '' };
 
 const formatDate = (date) => date ? new Intl.DateTimeFormat('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }).format(new Date(`${date}T00:00:00`)) : '-';
 
@@ -20,7 +20,7 @@ const Employees = () => {
 
   useEffect(() => {
     let cancelled = false;
-    apiFetch('/employees')
+    apiFetch('/hotel/guests')
       .then((response) => {
         if (!response.ok) throw new Error('No se pudieron cargar los empleados.');
         return response.json();
@@ -49,7 +49,7 @@ const Employees = () => {
     event.preventDefault();
     setSaving(true);
     try {
-      const response = await apiFetch('/employees', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...form, salary: Number(form.salary) }) });
+      const response = await apiFetch('/hotel/guests', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(form) });
       if (!response.ok) throw new Error('No se pudo guardar el empleado.');
       const createdEmployee = await response.json();
       setEmployees((current) => [...current, createdEmployee]);
@@ -124,7 +124,7 @@ const Employees = () => {
   return (
     <div className="mx-auto w-full max-w-[1600px] space-y-6">
       <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
-        <div><p className="text-sm font-semibold uppercase tracking-wide text-primary-600 dark:text-primary-400">Casa Andina</p><h2 className="mt-1 text-2xl font-bold text-gray-800 dark:text-gray-100">Huéspedes</h2><p className="mt-1 text-gray-500 dark:text-gray-400">Registro de huéspedes y datos de contacto del hotel.</p></div>
+        <div><p className="text-sm font-semibold uppercase tracking-wide text-primary-600 dark:text-primary-400">Casa Andina</p><h2 className="mt-1 text-2xl font-bold text-gray-800 dark:text-gray-100">Huéspedes</h2><p className="mt-1 text-gray-500 dark:text-gray-400">Registro real de huéspedes y datos de contacto del hotel.</p></div>
         <div className="flex flex-wrap gap-2"><button type="button" onClick={exportEmployeesCsv} disabled={!filteredEmployees.length} title="Descargar CSV" className="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-dark-surface dark:text-gray-200 dark:hover:bg-gray-800"><Download size={17} /> CSV</button><button type="button" onClick={exportEmployeesExcel} disabled={!filteredEmployees.length} title="Descargar Excel" className="inline-flex items-center gap-2 rounded-lg border border-green-200 bg-green-50 px-3 py-2.5 text-sm font-semibold text-green-700 shadow-sm hover:bg-green-100 disabled:cursor-not-allowed disabled:opacity-50 dark:border-green-900/50 dark:bg-green-950/30 dark:text-green-300"><FileSpreadsheet size={17} /> Excel</button><button type="button" onClick={exportEmployeesPdf} disabled={!filteredEmployees.length} title="Descargar PDF" className="inline-flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2.5 text-sm font-semibold text-red-700 shadow-sm hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-50 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-300"><FileText size={17} /> PDF</button><button type="button" onClick={() => setIsFormOpen(true)} className="inline-flex items-center gap-2 rounded-lg bg-primary-600 px-3 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-primary-700"><Plus size={17} /> Nuevo huésped</button></div>
       </div>
 
